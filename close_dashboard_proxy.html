@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Close CRM — Setter Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e0f11;--s:#16181c;--s2:#1e2026;--b:rgba(255,255,255,0.07);--b2:rgba(255,255,255,0.13);--t:#f0f0f0;--m:#6b7280;--ac:#7c6fff;--teal:#5dcaa5;--amb:#f59e0b;--red:#ef4444;--mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--t);font-family:var(--sans);min-height:100vh;}
+.topbar{border-bottom:1px solid var(--b);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg);z-index:10;gap:8px;flex-wrap:wrap;}
+.logo{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--ac);text-transform:uppercase;white-space:nowrap;}
+.org{font-size:13px;color:var(--m);margin-left:1rem;}
+.badge{font-family:var(--mono);font-size:10px;background:rgba(124,111,255,.15);color:var(--ac);border:1px solid rgba(124,111,255,.3);padding:2px 9px;border-radius:99px;margin-left:.6rem;white-space:nowrap;}
+.controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+select{background:var(--s);border:1px solid var(--b2);border-radius:6px;padding:.3rem .65rem;color:var(--t);font-size:12px;cursor:pointer;font-family:var(--sans);outline:none;}
+.btn{background:var(--s);border:1px solid var(--b2);border-radius:6px;padding:.3rem .75rem;color:var(--t);font-size:12px;cursor:pointer;font-family:var(--sans);}
+.btn-ac{background:var(--ac);border-color:var(--ac);font-weight:600;color:#fff;}
+.main{padding:1.5rem;max-width:1140px;margin:0 auto;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem;}
+.sc{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem 1.15rem;position:relative;overflow:hidden;}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.sc.p::before{background:var(--ac);}
+.sc.t::before{background:var(--teal);}
+.sc.a::before{background:var(--amb);}
+.sc.r::before{background:var(--red);}
+.sl{font-size:10px;font-weight:500;color:var(--m);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;}
+.sv{font-size:24px;font-weight:600;font-family:var(--mono);line-height:1;margin-bottom:.3rem;}
+.ss{font-size:11px;color:var(--m);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.5rem;}
+.sec{margin-bottom:1.5rem;}
+.sec-title{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--m);margin-bottom:.75rem;}
+.card{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1.15rem;}
+.barchart{display:flex;align-items:flex-end;gap:2px;height:80px;margin-top:.6rem;}
+.bc{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;justify-content:flex-end;}
+.bf{width:100%;border-radius:2px 2px 0 0;min-height:2px;transition:height .25s;}
+.bd{font-size:8px;color:var(--m);font-family:var(--mono);}
+.bv{font-size:8px;color:var(--m);font-family:var(--mono);}
+.lb-row{display:flex;align-items:center;gap:10px;padding:.85rem 1.15rem;border-bottom:1px solid var(--b);transition:background .1s;}
+.lb-row:last-child{border-bottom:none;}
+.lb-row:hover{background:var(--s2);}
+.lb-rank{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--m);min-width:22px;text-align:center;}
+.av{width:32px;height:32px;border-radius:50%;background:rgba(124,111,255,.2);color:var(--ac);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.av.me{background:rgba(93,202,165,.2);color:var(--teal);border:1px solid rgba(93,202,165,.4);}
+.lb-info{flex:1;min-width:0;}
+.lb-name{font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px;white-space:nowrap;}
+.you{font-size:9px;font-weight:600;background:rgba(93,202,165,.2);color:var(--teal);border:1px solid rgba(93,202,165,.3);padding:1px 6px;border-radius:99px;}
+.lb-bar-wrap{width:100%;height:3px;background:var(--s2);border-radius:99px;overflow:hidden;margin-top:4px;}
+.lb-bar{height:100%;border-radius:99px;background:var(--ac);}
+.lb-bar.me{background:var(--teal);}
+.lb-stats{display:flex;gap:1.25rem;flex-shrink:0;}
+.lb-stat{text-align:right;}
+.lb-stat-val{font-family:var(--mono);font-size:12px;font-weight:500;}
+.lb-stat-lbl{font-size:9px;color:var(--m);margin-top:1px;}
+.call-card{background:var(--s);border:1px solid var(--b);border-radius:9px;padding:.75rem 1.1rem;margin-bottom:5px;display:grid;grid-template-columns:58px 1fr 90px 90px auto;align-items:center;gap:10px;transition:border-color .15s;}
+.call-card:hover{border-color:var(--b2);}
+.c-dur{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--teal);}
+.c-lead{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.c-date{font-family:var(--mono);font-size:10px;color:var(--m);text-align:right;}
+.pill{font-size:10px;font-weight:500;padding:2px 7px;border-radius:99px;white-space:nowrap;text-align:center;}
+.p-out{background:rgba(93,202,165,.15);color:var(--teal);}
+.p-in{background:rgba(245,158,11,.15);color:var(--amb);}
+.rec-btn{font-size:10px;font-weight:600;padding:3px 9px;border-radius:5px;background:rgba(124,111,255,.15);color:var(--ac);border:1px solid rgba(124,111,255,.25);cursor:pointer;text-decoration:none;white-space:nowrap;display:inline-block;transition:background .15s;}
+.rec-btn:hover{background:rgba(124,111,255,.3);}
+.no-rec{font-size:10px;color:var(--m);}
+.loading{display:flex;align-items:center;justify-content:center;padding:5rem;gap:.75rem;color:var(--m);font-size:14px;}
+.spin{width:16px;height:16px;border:2px solid var(--b2);border-top-color:var(--ac);border-radius:50%;animation:sp .8s linear infinite;display:inline-block;vertical-align:middle;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.empty{text-align:center;padding:2rem;color:var(--m);font-size:13px;}
+.info-bar{background:rgba(124,111,255,.08);border:1px solid rgba(124,111,255,.15);border-radius:8px;padding:.5rem .9rem;font-size:11px;color:var(--m);margin-bottom:1.25rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr);}.grid2{grid-template-columns:1fr;}.main{padding:1rem;}.call-card{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div style="display:flex;align-items:center;flex-wrap:wrap;">
+    <span class="logo">Close CRM</span>
+    <span class="org" id="org-name"></span>
+    <span class="badge" id="period-badge">Last 30 days</span>
+  </div>
+  <div class="controls">
+    <select id="tz-sel" onchange="reload()">
+      <option value="UTC">UTC</option>
+      <option value="Europe/London" selected>🇬🇧 UK</option>
+      <option value="America/New_York">🇺🇸 New York</option>
+      <option value="America/Los_Angeles">🇺🇸 Los Angeles</option>
+      <option value="America/Toronto">🇨🇦 Toronto</option>
+      <option value="Asia/Tokyo">🇯🇵 Japan</option>
+      <option value="Asia/Dubai">🇦🇪 Dubai</option>
+      <option value="Asia/Karachi">🇵🇰 Pakistan</option>
+      <option value="Africa/Cairo">🇪🇬 Egypt</option>
+      <option value="Australia/Sydney">🇦🇺 Sydney</option>
+    </select>
+    <select id="period-sel" onchange="reload()">
+      <option value="7">Last 7 days</option>
+      <option value="14">Last 14 days</option>
+      <option value="30" selected>Last 30 days</option>
+      <option value="60">Last 60 days</option>
+      <option value="90">Last 90 days</option>
+    </select>
+    <button class="btn btn-ac" onclick="reload()">↻ Refresh</button>
+  </div>
+</div>
+<div class="main">
+  <div id="content"><div class="loading"><div class="spin"></div>Loading…</div></div>
+</div>
+
+<script>
+const BASE = 'http://localhost:8765';
+let DAYS = 30;
+let TZ = 'Europe/London';
+let _callsAbort = false;  // flip to true on reload to cancel in-flight pages
+
+function fmtDur(s) {
+  if (!s || s <= 0) return '—';
+  s = Math.round(s);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m ${String(sec).padStart(2,'0')}s`;
+}
+function fmtTalkTime(secs) {
+  if (!secs || secs <= 0) return '0m';
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}
+function ini(n) {
+  if (!n) return '?';
+  return n.trim().split(/\s+/).map(w=>w[0]).join('').substring(0,2).toUpperCase();
+}
+function fmtDate(iso) {
+  if (!iso) return '—';
+  try {
+    return new Date(iso).toLocaleString('en-GB', {
+      timeZone: TZ, day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'
+    });
+  } catch(e) { return iso.split('T')[0]; }
+}
+
+// ── Progressive calls state ──────────────────────────────────────────────────
+const cs = {
+  chart: {},        // date -> count
+  outcomes: {},     // disposition -> count
+  meaningful: [],   // sorted by duration desc
+  leadNames: {},
+  total: 0,
+  loading: false,
+};
+
+function resetCallState(days) {
+  const chartDays = Math.min(days, 30);
+  cs.chart = {};
+  for (let i = chartDays - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    cs.chart[d.toISOString().split('T')[0]] = 0;
+  }
+  cs.outcomes  = {};
+  cs.meaningful = [];
+  cs.leadNames  = {};
+  cs.total      = 0;
+  cs.loading    = true;
+}
+
+function ingestPage(calls, leadNames) {
+  Object.assign(cs.leadNames, leadNames || {});
+  cs.total += calls.length;
+  for (const c of calls) {
+    const k   = c.disposition || c.status || 'unknown';
+    cs.outcomes[k] = (cs.outcomes[k] || 0) + 1;
+    const day = (c.date_created || '').split('T')[0];
+    if (cs.chart[day] !== undefined) cs.chart[day]++;
+    if ((c.duration || 0) >= 300) cs.meaningful.push(c);
+  }
+  cs.meaningful.sort((a,b) => (b.duration||0) - (a.duration||0));
+}
+
+// ── DOM patchers (called after every page) ───────────────────────────────────
+function renderChart() {
+  const el = document.getElementById('chart-wrap');
+  if (!el) return;
+  const entries = Object.entries(cs.chart);
+  const maxC = Math.max(...Object.values(cs.chart), 1);
+  const step = entries.length > 20 ? 5 : entries.length > 14 ? 3 : 1;
+  el.innerHTML = entries.map(([day,count], idx) => {
+    const h   = Math.max(Math.round((count/maxC)*76), 2);
+    const lbl = idx % step === 0 ? day.split('-').slice(1).join('/') : '';
+    const showVal = count > 0 && idx % step === 0;
+    return `<div class="bc">
+      <div class="bv">${showVal ? count : ''}</div>
+      <div class="bf" style="height:${h}px;background:${count>0?'var(--ac)':'var(--b2)'};opacity:${count>0?0.55+count/maxC*0.45:0.35};"></div>
+      <div class="bd">${lbl}</div>
+    </div>`;
+  }).join('');
+
+  const lbl = document.getElementById('chart-lbl');
+  if (lbl) lbl.innerHTML = cs.loading
+    ? `<span class="spin" style="width:9px;height:9px;margin-left:4px;"></span> ${cs.total} calls`
+    : `${cs.total} calls`;
+}
+
+function renderOutcomes() {
+  const el = document.getElementById('outcomes-wrap');
+  if (!el) return;
+  const total = cs.total;
+  const rows = [
+    ['Connected',  cs.outcomes['answered']   || 0, 'var(--teal)'],
+    ['No answer',  cs.outcomes['no-answer']  || 0, 'var(--m)'],
+    ['Cancelled',  cs.outcomes['cancel']     || 0, '#6b7280'],
+    ['Voicemail',  cs.outcomes['voicemail']  || 0, 'var(--amb)'],
+    ['Busy',       cs.outcomes['busy']       || 0, 'var(--red)'],
+    ['Blocked',    cs.outcomes['blocked']    || 0, '#6b7280'],
+  ].filter(([,v]) => v > 0);
+
+  const connected = cs.outcomes['answered'] || 0;
+  const connRate  = total > 0 ? Math.round(connected / total * 100) : 0;
+
+  const lbl = document.getElementById('outcomes-lbl');
+  if (lbl) lbl.textContent = `${total} calls${cs.loading ? ' …' : ''}`;
+
+  if (total === 0) {
+    el.innerHTML = '<div class="empty" style="padding:1rem;">No calls loaded yet…</div>';
+    return;
+  }
+  el.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      ${rows.map(([lbl2, val, col]) => `
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-size:11px;color:var(--m);">${lbl2}</span>
+            <span style="font-family:var(--mono);font-size:11px;">${val}
+              <span style="color:var(--m);font-size:10px;">${total?Math.round(val/total*100):0}%</span>
+            </span>
+          </div>
+          <div style="height:4px;background:var(--s2);border-radius:99px;overflow:hidden;">
+            <div style="height:100%;width:${total?Math.round(val/total*100):0}%;background:${col};border-radius:99px;transition:width .4s;"></div>
+          </div>
+        </div>`).join('')}
+      <div style="margin-top:2px;font-size:11px;color:var(--m);border-top:1px solid var(--b);padding-top:8px;">
+        Connect rate: <strong style="color:var(--teal);">${connRate}%</strong>
+      </div>
+    </div>`;
+}
+
+function renderMeaningful() {
+  const el = document.getElementById('meaningful-wrap');
+  if (!el) return;
+  const list = cs.meaningful;
+  const lbl  = document.getElementById('meaningful-lbl');
+  if (lbl) lbl.textContent = cs.loading
+    ? `${list.length} found so far…`
+    : `${list.length}`;
+
+  // also update stat card
+  const sc = document.getElementById('stat-meaningful');
+  if (sc) sc.textContent = list.length || (cs.loading ? '…' : '0');
+
+  if (list.length === 0) {
+    el.innerHTML = cs.loading
+      ? '<div class="empty">Loading calls…</div>'
+      : `<div class="empty">No calls over 5 minutes in the last ${DAYS} days.</div>`;
+    return;
+  }
+  el.innerHTML = list.slice(0,50).map(c => {
+    const lead   = cs.leadNames[c.lead_id] || c.lead_id || '—';
+    const dateStr = fmtDate(c.date_created);
+    const dir    = c.direction || 'outbound';
+    const url    = c.lead_id && c.id
+      ? `https://app.close.com/lead/${c.lead_id}/call/${c.id}/`
+      : null;
+    return `<div class="call-card">
+      <span class="c-dur">${fmtDur(c.duration)}</span>
+      <span class="c-lead" title="${lead}">${lead}</span>
+      <span class="pill ${dir==='outbound'?'p-out':'p-in'}">${dir}</span>
+      <span class="c-date">${dateStr}</span>
+      ${url ? `<a class="rec-btn" href="${url}" target="_blank">▶ Open</a>` : `<span class="no-rec">—</span>`}
+    </div>`;
+  }).join('') + (list.length > 50 ? `<div class="empty" style="padding:.5rem;">+ ${list.length-50} more</div>` : '');
+}
+
+// ── Progressive loader ───────────────────────────────────────────────────────
+async function loadCalls(days) {
+  let skip = 0;
+  while (!_callsAbort) {
+    try {
+      const res = await fetch(`${BASE}/api/calls?skip=${skip}&days=${days}`);
+      if (_callsAbort) break;
+      if (!res.ok) break;
+      const page = await res.json();
+      if (_callsAbort) break;
+      ingestPage(page.calls || [], page.lead_names || {});
+      if (!page.has_more) cs.loading = false;
+      renderChart();
+      renderOutcomes();
+      renderMeaningful();
+      if (!page.has_more) break;
+      skip += 100;
+    } catch(e) {
+      console.warn('calls page error', e);
+      cs.loading = false;
+      renderChart(); renderOutcomes(); renderMeaningful();
+      break;
+    }
+  }
+}
+
+// ── Main build ───────────────────────────────────────────────────────────────
+async function reload() {
+  _callsAbort = true;
+  DAYS = parseInt(document.getElementById('period-sel').value);
+  TZ   = document.getElementById('tz-sel').value;
+  document.getElementById('period-badge').textContent = `Last ${DAYS} days`;
+  document.getElementById('content').innerHTML = '<div class="loading"><div class="spin"></div>Loading…</div>';
+  _callsAbort = false;
+  await build();
+}
+
+async function build() {
+  try {
+    const t0  = Date.now();
+    const res = await fetch(`${BASE}/api/dashboard?days=${DAYS}`);
+    if (!res.ok) { const t = await res.text(); throw new Error(`${res.status}: ${t.slice(0,300)}`); }
+    const d   = await res.json();
+    const elapsed = Date.now() - t0;
+
+    document.getElementById('org-name').textContent = d.me.org || '';
+
+    const comp  = d.comparison || {};
+    const myId  = d.me.id;
+
+    // Name lookup
+    const userLookup = (comp.lookup || {}).user || {};
+    const resolveUser = (uid, rowName) => d.users[uid] || userLookup[uid]?.display || rowName || uid;
+
+    // Build leaderboard from comp.data (array) or comp.aggregations (dict)
+    const leaders = [];
+    const rawArr = comp.data;
+    const rawAgg = comp.aggregations || {};
+    if (Array.isArray(rawArr)) {
+      for (const row of rawArr) {
+        const uid  = row.user_id || row.id;
+        if (!uid) continue;
+        const outCalls   = row['calls.outbound.all.count']  || 0;
+        const inCalls    = row['calls.inbound.all.count']   || 0;
+        const totalDur   = row['calls.all.all.sum_duration'] || 0;
+        const avgDurR    = row['calls.all.all.avg_duration'] || 0;
+        const totalCalls = outCalls + inCalls;
+        if (totalCalls === 0) continue;
+        leaders.push({ uid, name: resolveUser(uid, row.name), outCalls, inCalls,
+                       totalCalls, totalDur,
+                       avgDur: Math.round(avgDurR || (totalCalls ? totalDur/totalCalls : 0)) });
+      }
+    } else {
+      for (const [uid, metrics] of Object.entries(rawAgg)) {
+        if (['totals','__all__','total','all'].includes(uid)) continue;
+        if (typeof metrics !== 'object' || !metrics) continue;
+        const outCalls   = metrics['calls.outbound.all.count']  || 0;
+        const inCalls    = metrics['calls.inbound.all.count']   || 0;
+        const totalDur   = metrics['calls.all.all.sum_duration'] || 0;
+        const avgDurR    = metrics['calls.all.all.avg_duration'] || 0;
+        const totalCalls = outCalls + inCalls;
+        if (totalCalls === 0) continue;
+        leaders.push({ uid, name: resolveUser(uid), outCalls, inCalls,
+                       totalCalls, totalDur,
+                       avgDur: Math.round(avgDurR || (totalCalls ? totalDur/totalCalls : 0)) });
+      }
+    }
+    leaders.sort((a,b) => b.outCalls - a.outCalls);
+
+    // Team totals from reporting API
+    const apiTotals = (comp.aggregations || {}).totals || {};
+    const totOut = apiTotals['calls.outbound.all.count'] || leaders.reduce((s,u)=>s+u.outCalls,0);
+    const totIn  = apiTotals['calls.inbound.all.count']  || leaders.reduce((s,u)=>s+u.inCalls,0);
+    const totAll = apiTotals['calls.all.all.count']       || (totOut+totIn);
+    const avgDur = Math.round(apiTotals['calls.all.all.avg_duration'] || 0);
+
+    // My personal metrics (from reporting API — accurate for full period)
+    const myEntry       = leaders.find(l => l.uid === myId);
+    const myOutCalls    = myEntry?.outCalls  || 0;
+    const myInCalls     = myEntry?.inCalls   || 0;
+    const myTalkTime    = myEntry?.totalDur  || 0;
+    const myDialsPerDay = DAYS > 0 ? (myOutCalls / DAYS).toFixed(1) : '0';
+    const myTalkPerDay  = DAYS > 0 ? myTalkTime / DAYS : 0;  // seconds/day
+
+    const maxLb      = leaders[0]?.outCalls || 1;
+    const rankEmoji  = i => i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}`;
+    const chartDays  = Math.min(DAYS, 30);
+
+    // Render static skeleton — calls sections use placeholder IDs
+    document.getElementById('content').innerHTML = `
+      <div class="info-bar">
+        <span>Data from <strong>${d.since}</strong> → today · ${elapsed}ms</span>
+        <span>Timezone: <strong>${TZ}</strong></span>
+      </div>
+
+      <div class="stats">
+        <div class="sc p">
+          <div class="sl">My avg dials / day</div>
+          <div class="sv">${myDialsPerDay}</div>
+          <div class="ss">${myOutCalls} out · ${myInCalls} in · ${DAYS}d window</div>
+        </div>
+        <div class="sc t">
+          <div class="sl">My meaningful calls</div>
+          <div class="sv" id="stat-meaningful">…</div>
+          <div class="ss">5m+ · loading</div>
+        </div>
+        <div class="sc a">
+          <div class="sl">Avg call duration</div>
+          <div class="sv">${fmtDur(avgDur)}</div>
+          <div class="ss">All setters · ${totAll.toLocaleString()} calls</div>
+        </div>
+        <div class="sc r">
+          <div class="sl">My avg talk / day</div>
+          <div class="sv">${fmtTalkTime(myTalkPerDay)}</div>
+          <div class="ss">${fmtTalkTime(myTalkTime)} total · ${DAYS}d</div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="sec">
+          <div class="sec-title">
+            My calls / day — last ${chartDays} days
+            <span id="chart-lbl" style="font-weight:400;text-transform:none;letter-spacing:0;font-size:9px;margin-left:4px;color:var(--m);"></span>
+          </div>
+          <div class="card">
+            <div class="barchart" id="chart-wrap">
+              ${Array(chartDays).fill(0).map((_,i) => `<div class="bc"><div class="bv"></div><div class="bf" style="height:2px;background:var(--b2);opacity:.35;"></div><div class="bd"></div></div>`).join('')}
+            </div>
+          </div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-title">
+            My call outcomes —
+            <span id="outcomes-lbl" style="font-weight:400;text-transform:none;letter-spacing:0;">loading…</span>
+          </div>
+          <div class="card" id="outcomes-wrap">
+            <div class="empty" style="padding:1rem;">Loading calls…</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-title">🏆 Leaderboard — outbound calls</div>
+        <div class="card" style="padding:0;overflow:hidden;">
+          ${leaders.length === 0
+            ? '<div class="empty">No data from reporting API.</div>'
+            : leaders.map((u,i) => `
+            <div class="lb-row">
+              <span class="lb-rank">${rankEmoji(i)}</span>
+              <div class="av ${u.uid===myId?'me':''}">${ini(u.name)}</div>
+              <div class="lb-info">
+                <div class="lb-name">
+                  ${u.name}${u.uid===myId?' <span class="you">you</span>':''}
+                </div>
+                <div class="lb-bar-wrap">
+                  <div class="lb-bar ${u.uid===myId?'me':''}" style="width:${Math.round(u.outCalls/maxLb*100)}%;"></div>
+                </div>
+              </div>
+              <div class="lb-stats">
+                <div class="lb-stat">
+                  <div class="lb-stat-val">${u.outCalls}</div>
+                  <div class="lb-stat-lbl">outbound</div>
+                </div>
+                <div class="lb-stat">
+                  <div class="lb-stat-val" style="color:var(--amb);">${u.inCalls}</div>
+                  <div class="lb-stat-lbl">inbound</div>
+                </div>
+                <div class="lb-stat">
+                  <div class="lb-stat-val">${fmtTalkTime(u.totalDur)}</div>
+                  <div class="lb-stat-lbl">talk time</div>
+                </div>
+                <div class="lb-stat">
+                  <div class="lb-stat-val">${fmtDur(u.avgDur)}</div>
+                  <div class="lb-stat-lbl">avg dur</div>
+                </div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-title">
+          Your meaningful calls — 5+ min
+          <span id="meaningful-lbl" style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;margin-left:4px;"></span>
+        </div>
+        <div id="meaningful-wrap">
+          <div class="empty">Loading calls…</div>
+        </div>
+      </div>
+    `;
+
+    // Kick off progressive call loading
+    resetCallState(DAYS);
+    renderChart();
+    loadCalls(DAYS);
+
+  } catch(e) {
+    console.error(e);
+    document.getElementById('content').innerHTML =
+      `<div class="empty" style="color:var(--red);">Error: ${e.message}<br>
+       <small style="color:var(--m);margin-top:8px;display:block;">Make sure close_proxy.py is running.</small></div>`;
+  }
+}
+
+build();
+</script>
+</body>
+</html>
